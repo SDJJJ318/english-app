@@ -12,7 +12,7 @@
         <div class="phonetic-grid">
           <div v-for="ph in getPhoneticsByGroup(group.id)" :key="ph.s"
             class="phonetic-item"
-            @click="selectedPhonetic = ph">
+            @click="playWord(ph.words[0])">
             <span class="phonetic-symbol">{{ ph.s }}</span>
           </div>
         </div>

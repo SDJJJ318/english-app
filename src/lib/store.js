@@ -55,7 +55,7 @@ watch(store, () => {
 const allWords = words.map((w, i) => ({ ...w, _key: `w:${i}`, _type: 'word' }))
 const allPhrases = phrases.map((p, i) => ({ ...p, _key: `p:${i}`, _type: 'phrase' }))
 const allPhonetics = phonetics.map((ph, i) => ({ ...ph, _key: `ph:${i}`, _type: 'phonetic' }))
-const allGrammar = grammarQuestions.map(g => ({ ...g, _key: `g:${g.id}`, _type: 'grammar' }))
+const allGrammar = grammarQuestions.map((g, i) => ({ ...g, _key: `g:${i}`, _type: 'grammar' }))
 
 // 自定义内容动态加 _key
 export const getCustomItems = () => store.custom.map(c => ({ ...c, _key: `c:${c.id}`, _type: c.type }))
