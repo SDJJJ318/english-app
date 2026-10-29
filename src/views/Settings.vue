@@ -19,6 +19,14 @@
         </div>
 
         <div class="setting-item">
+          <label class="setting-label">朗读声音来源</label>
+          <select v-model="store.settings.ttsEngine" class="setting-select">
+            <option value="online">在线真人发音（推荐，需联网）</option>
+            <option value="system">手机自带朗读（可离线）</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
           <label class="setting-label">发音识别模式</label>
           <select v-model="store.settings.sttMode" class="setting-select">
             <option value="auto">自动评分（需语音识别）</option>

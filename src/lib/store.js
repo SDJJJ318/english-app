@@ -32,6 +32,7 @@ const defaultState = {
   settings: {
     speechRate: 0.9,
     voiceName: '', // 空表示默认
+    ttsEngine: 'online', // 'online' 有道在线发音 | 'system' 手机自带朗读
     sttMode: 'auto', // 'auto' | 'record'
   },
   // 统计：{ date: { right, wrong } }

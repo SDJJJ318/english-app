@@ -2,59 +2,60 @@
 import { store } from './store'
 
 // ========== 语音朗读 (TTS) ==========
-let voices = []
-let voicesLoaded = false
+// 优先用有道词典在线发音（国内可访问，不依赖手机朗读引擎），失败时用手机自带朗读
+const hasSystemTTS = () => 'speechSynthesis' in window
 
-// 加载可用语音
-const loadVoices = () => {
-  return new Promise((resolve) => {
-    voices = speechSynthesis.getVoices()
-    if (voices.length) {
-      voicesLoaded = true
-      resolve(voices)
-    } else {
-      speechSynthesis.onvoiceschanged = () => {
-        voices = speechSynthesis.getVoices()
-        voicesLoaded = true
-        resolve(voices)
-      }
-    }
+// 手机自带的英文语音（有的浏览器一开始返回空列表，之后才加载好）
+export const getSystemEnglishVoices = () => {
+  if (!hasSystemTTS()) return []
+  return speechSynthesis.getVoices().filter(v => v.lang.replace('_', '-').toLowerCase().startsWith('en'))
+}
+
+let audio = null
+
+const speakOnline = (text, rate) => {
+  if (audio) audio.pause()
+  // type=2 美式发音
+  audio = new Audio(`https://dict.youdao.com/dictvoice?type=2&audio=${encodeURIComponent(text)}`)
+  audio.playbackRate = rate
+  return new Promise((resolve, reject) => {
+    audio.onended = resolve
+    audio.onerror = () => reject(new Error('online_tts_failed'))
+    audio.play().catch(reject)
   })
 }
 
-// 获取英语语音
-export const getEnglishVoices = async () => {
-  if (!voicesLoaded) await loadVoices()
-  return voices.filter(v => v.lang.startsWith('en'))
-}
-
-// 朗读文本
-export const speak = async (text, options = {}) => {
-  if (!text) return
-
-  speechSynthesis.cancel() // 停止当前朗读
-
-  if (!voicesLoaded) await loadVoices()
-
+const speakSystem = (text, rate) => {
+  if (!hasSystemTTS()) return Promise.reject(new Error('no_system_tts'))
+  speechSynthesis.cancel()
   const utterance = new SpeechSynthesisUtterance(text)
   utterance.lang = 'en-US'
-  utterance.rate = options.rate ?? store.settings.speechRate
-
-  // 选择语音
-  if (store.settings.voiceName) {
-    const voice = voices.find(v => v.name === store.settings.voiceName)
-    if (voice) utterance.voice = voice
-  } else {
-    // 优先选择 en-US 语音
-    const enVoice = voices.find(v => v.lang === 'en-US')
-    if (enVoice) utterance.voice = enVoice
-  }
-
+  utterance.rate = rate
+  const voice = getSystemEnglishVoices().find(v => v.lang.replace('_', '-') === 'en-US') || getSystemEnglishVoices()[0]
+  if (voice) utterance.voice = voice
   return new Promise((resolve, reject) => {
     utterance.onend = resolve
-    utterance.onerror = reject
+    utterance.onerror = (e) => reject(new Error(e.error || 'system_tts_failed'))
+    // 不能先 await 再调用，否则部分浏览器认为不是用户点击触发，直接静音
     speechSynthesis.speak(utterance)
   })
+}
+
+// 朗读文本。settings.ttsEngine: 'online' 在线发音（默认）| 'system' 手机自带
+export const speak = async (text, options = {}) => {
+  if (!text) return
+  const rate = options.rate ?? store.settings.speechRate
+
+  if (store.settings.ttsEngine === 'system') {
+    return speakSystem(text, rate)
+  }
+  try {
+    await speakOnline(text, rate)
+  } catch (err) {
+    // 没网或接口不可用时退回手机自带朗读
+    if (!hasSystemTTS()) throw err
+    return speakSystem(text, rate)
+  }
 }
 
 // ========== 语音识别 (STT) ==========
