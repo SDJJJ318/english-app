@@ -2,10 +2,15 @@
 import { store } from './store'
 
 // ========== 语音朗读 (TTS) ==========
-// 优先用有道词典在线发音（国内可访问，不依赖手机朗读引擎），失败时用手机自带朗读
+// 内置内容的发音已预先下载到 public/audio/（见 scripts/fetch-audio.mjs），
+// 播放本地文件最稳定；自定义内容没有预录音频，用手机自带朗读
+import { audioKey } from './audioKey'
+import audioIndex from '../data/audioIndex.json'
+
+const recorded = new Set(audioIndex)
 const hasSystemTTS = () => 'speechSynthesis' in window
 
-// 手机自带的英文语音（有的浏览器一开始返回空列表，之后才加载好）
+// 手机自带的英文语音
 export const getSystemEnglishVoices = () => {
   if (!hasSystemTTS()) return []
   return speechSynthesis.getVoices().filter(v => v.lang.replace('_', '-').toLowerCase().startsWith('en'))
@@ -13,14 +18,13 @@ export const getSystemEnglishVoices = () => {
 
 let audio = null
 
-const speakOnline = (text, rate) => {
+const speakRecorded = (key, rate) => {
   if (audio) audio.pause()
-  // type=2 美式发音
-  audio = new Audio(`https://dict.youdao.com/dictvoice?type=2&audio=${encodeURIComponent(text)}`)
+  audio = new Audio(`${import.meta.env.BASE_URL}audio/${key}.mp3`)
   audio.playbackRate = rate
   return new Promise((resolve, reject) => {
     audio.onended = resolve
-    audio.onerror = () => reject(new Error('online_tts_failed'))
+    audio.onerror = () => reject(new Error('audio_failed'))
     audio.play().catch(reject)
   })
 }
@@ -36,23 +40,23 @@ const speakSystem = (text, rate) => {
   return new Promise((resolve, reject) => {
     utterance.onend = resolve
     utterance.onerror = (e) => reject(new Error(e.error || 'system_tts_failed'))
-    // 不能先 await 再调用，否则部分浏览器认为不是用户点击触发，直接静音
     speechSynthesis.speak(utterance)
   })
 }
 
-// 朗读文本。settings.ttsEngine: 'online' 在线发音（默认）| 'system' 手机自带
+// 朗读文本。settings.ttsEngine: 'online' 优先内置录音（默认）| 'system' 只用手机自带
 export const speak = async (text, options = {}) => {
   if (!text) return
   const rate = options.rate ?? store.settings.speechRate
+  const key = audioKey(text)
 
-  if (store.settings.ttsEngine === 'system') {
+  // 必须在点击时同步决定用哪种方式，否则部分手机会静音
+  if (store.settings.ttsEngine === 'system' || !recorded.has(key)) {
     return speakSystem(text, rate)
   }
   try {
-    await speakOnline(text, rate)
+    await speakRecorded(key, rate)
   } catch (err) {
-    // 没网或接口不可用时退回手机自带朗读
     if (!hasSystemTTS()) throw err
     return speakSystem(text, rate)
   }

@@ -21,8 +21,8 @@
         <div class="setting-item">
           <label class="setting-label">朗读声音来源</label>
           <select v-model="store.settings.ttsEngine" class="setting-select">
-            <option value="online">在线真人发音（推荐，需联网）</option>
-            <option value="system">手机自带朗读（可离线）</option>
+            <option value="online">内置录音（推荐）</option>
+            <option value="system">手机自带朗读</option>
           </select>
         </div>
 
