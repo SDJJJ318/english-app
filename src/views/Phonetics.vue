@@ -12,7 +12,8 @@
         <div class="phonetic-grid">
           <div v-for="ph in getPhoneticsByGroup(group.id)" :key="ph.s"
             class="phonetic-item"
-            @click="playWord(ph.words[0])">
+            :class="{ active: selectedPhonetic?.s === ph.s }"
+            @click="selectPhonetic(ph)">
             <span class="phonetic-symbol">{{ ph.s }}</span>
           </div>
         </div>
@@ -20,20 +21,28 @@
 
       <div v-if="selectedPhonetic" class="phonetic-detail card">
         <button class="close-btn" @click="selectedPhonetic = null">✕</button>
-        <h2 class="detail-symbol">/{{ selectedPhonetic.s }}/</h2>
-        <p class="detail-tip">{{ selectedPhonetic.tip }}</p>
 
-        <div class="example-words">
-          <h4>例词：</h4>
-          <div v-for="word in selectedPhonetic.words" :key="word" class="example-word">
-            <span>{{ word }}</span>
-            <button class="play-btn-small" @click="playWord(word)">🔊</button>
-          </div>
+        <div class="detail-header">
+          <h2 class="detail-symbol" @click="playPhonetic(selectedPhonetic.s)">
+            /{{ selectedPhonetic.s }}/
+            <span class="play-icon">🔊</span>
+          </h2>
+          <p class="detail-tip">{{ selectedPhonetic.tip }}</p>
         </div>
 
-        <div class="practice-section">
-          <h4>跟读练习：</h4>
-          <SpeakCheck :text="selectedPhonetic.words[0]" @result="onPracticeResult" />
+        <div class="patterns-section">
+          <h4>字母组合：</h4>
+          <div v-for="(pattern, idx) in selectedPhonetic.patterns" :key="idx" class="pattern-group">
+            <div class="pattern-header">
+              <span class="pattern-letters">{{ pattern.letters }}</span>
+            </div>
+            <div class="pattern-words">
+              <div v-for="word in pattern.words" :key="word" class="word-item" @click="playWord(word)">
+                <span class="word-text">{{ word }}</span>
+                <span class="word-play">🔊</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -41,17 +50,27 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 import { phonetics, phoneticGroups } from '../lib/store'
 import { speak } from '../lib/speech'
-import SpeakCheck from '../components/SpeakCheck.vue'
 
-const router = useRouter()
 const selectedPhonetic = ref(null)
 
 const getPhoneticsByGroup = (groupId) => {
   return phonetics.filter(ph => ph.g === groupId)
+}
+
+const selectPhonetic = (ph) => {
+  selectedPhonetic.value = ph
+  playPhonetic(ph.s)
+}
+
+const playPhonetic = async (symbol) => {
+  try {
+    await speak(symbol)
+  } catch (err) {
+    console.error('播放失败', err)
+  }
 }
 
 const playWord = async (word) => {
@@ -60,11 +79,6 @@ const playWord = async (word) => {
   } catch (err) {
     console.error('播放失败', err)
   }
-}
-
-const onPracticeResult = (result) => {
-  // 音标练习不计入成绩，仅用于练习
-  console.log('练习结果:', result)
 }
 </script>
 
@@ -84,154 +98,205 @@ const onPracticeResult = (result) => {
 
 .back-btn {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  background: rgba(255,255,255,0.2);
+  top: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
-  font-size: 16px;
   padding: 8px 16px;
-  border-radius: 20px;
+  border-radius: 8px;
   cursor: pointer;
 }
 
+.page-title {
+  font-size: 28px;
+  margin: 0 0 8px 0;
+}
+
 .subtitle {
-  font-size: 16px;
+  margin: 0;
   opacity: 0.9;
-  margin-top: 8px;
+  font-size: 14px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .phonetic-group {
-  margin-bottom: 24px;
+  margin-bottom: 30px;
 }
 
 .group-title {
   font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 12px;
   color: #333;
+  margin-bottom: 12px;
+  padding-left: 10px;
+  border-left: 4px solid #fa8c16;
 }
 
 .phonetic-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-  gap: 8px;
+  gap: 10px;
 }
 
 .phonetic-item {
-  aspect-ratio: 1;
   background: white;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: 2px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 16px 8px;
+  text-align: center;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
 }
 
 .phonetic-item:active {
   transform: scale(0.95);
-  background: #e6f7ff;
+}
+
+.phonetic-item.active {
+  border-color: #fa8c16;
+  background: #fff7e6;
 }
 
 .phonetic-symbol {
-  font-size: 28px;
-  font-weight: 600;
-  color: #1890ff;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
 }
 
 .phonetic-detail {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  max-height: 70vh;
-  overflow-y: auto;
-  border-radius: 20px 20px 0 0;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
-  z-index: 100;
-  animation: slideUp 0.3s;
+  margin-top: 20px;
+  position: relative;
+  animation: slideIn 0.3s;
 }
 
-@keyframes slideUp {
+@keyframes slideIn {
   from {
-    transform: translateY(100%);
+    opacity: 0;
+    transform: translateY(-10px);
   }
   to {
+    opacity: 1;
     transform: translateY(0);
   }
 }
 
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 .close-btn {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 10px;
+  right: 10px;
+  background: #f0f0f0;
+  border: none;
   width: 32px;
   height: 32px;
-  background: #f5f5f5;
-  border: none;
   border-radius: 50%;
-  font-size: 18px;
   cursor: pointer;
+  font-size: 18px;
+  color: #666;
+}
+
+.detail-header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .detail-symbol {
   font-size: 48px;
-  text-align: center;
-  color: #1890ff;
-  margin-bottom: 16px;
+  color: #fa8c16;
+  margin: 0 0 12px 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.detail-symbol:active {
+  transform: scale(0.95);
+}
+
+.play-icon {
+  font-size: 32px;
 }
 
 .detail-tip {
-  font-size: 15px;
   color: #666;
-  line-height: 1.6;
-  margin-bottom: 24px;
-  padding: 12px;
-  background: #f9f9f9;
-  border-radius: 8px;
+  font-size: 15px;
+  margin: 0;
 }
 
-.example-words {
-  margin-bottom: 24px;
+.patterns-section {
+  margin-top: 20px;
 }
 
-.example-words h4 {
+.patterns-section h4 {
   font-size: 16px;
-  margin-bottom: 12px;
+  color: #333;
+  margin: 0 0 16px 0;
 }
 
-.example-word {
+.pattern-group {
+  margin-bottom: 20px;
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.pattern-header {
+  margin-bottom: 10px;
+}
+
+.pattern-letters {
+  display: inline-block;
+  background: #fa8c16;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.pattern-words {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.example-word span {
-  font-size: 18px;
-  font-weight: 500;
-}
-
-.play-btn-small {
-  background: none;
-  border: none;
-  font-size: 24px;
+.word-item {
+  background: white;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 8px 12px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
 }
 
-.practice-section {
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid #f0f0f0;
+.word-item:active {
+  transform: scale(0.95);
+  background: #f0f0f0;
 }
 
-.practice-section h4 {
+.word-text {
+  font-size: 14px;
+  color: #333;
+}
+
+.word-play {
   font-size: 16px;
-  margin-bottom: 12px;
 }
 </style>

@@ -15,7 +15,12 @@ for (const w of words) {
   if (w.ex) texts.add(w.ex)
 }
 for (const p of phrases) texts.add(p.en)
-for (const ph of phonetics) ph.words.forEach(x => texts.add(x))
+for (const ph of phonetics) {
+  texts.add(ph.s) // 音标本身
+  for (const pat of ph.patterns) {
+    pat.words.forEach(x => texts.add(x))
+  }
+}
 
 const fetchMp3 = async (text) => {
   const url = `https://fanyi.baidu.com/gettts?lan=en&spd=3&source=web&text=${encodeURIComponent(text)}`
