@@ -94,7 +94,7 @@ export const phrases = [
   { en: 'We can adjust some details.', zh: '我们可以调整一些细节。', ph: '/wiː kæn əˈdʒʌst sʌm dɪˈteɪlz/', scene: 'price' },
   { en: 'Let\'s find a win-win solution.', zh: '我们找一个双赢方案。', ph: '/lets faɪnd ə wɪn wɪn səˈluːʃn/', scene: 'price' },
   { en: 'I will give you the best support.', zh: '我会给你最大支持。', ph: '/aɪ wɪl ɡɪv juː ðə best səˈpɔːt/', scene: 'price' },
-]
+
   // MOQ与交货期 (76-90)
   { en: 'What\'s your MOQ?', zh: '你们的起订量是多少？', ph: '/wɒts jɔː(r) ˌem əʊ kjuː/', scene: 'moq' },
   { en: 'Our MOQ is 1 container.', zh: '我们起订量是1个柜。', ph: '/ˈaʊə(r) ˌem əʊ kjuː ɪz wʌn kənˈteɪnə(r)/', scene: 'moq' },
