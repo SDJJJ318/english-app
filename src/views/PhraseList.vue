@@ -25,6 +25,7 @@
         <div v-for="item in filteredItems" :key="item._key" class="phrase-card" @click="playPhrase(item)">
           <div class="phrase-main">
             <p class="phrase-en">{{ item.en }}</p>
+            <p class="phrase-ph">{{ item.ph }}</p>
             <p class="phrase-zh">{{ item.zh }}</p>
           </div>
           <span class="play-icon">🔊</span>
@@ -170,7 +171,14 @@ const startPractice = (mode) => {
 .phrase-en {
   font-size: 16px;
   font-weight: 500;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
+}
+
+.phrase-ph {
+  font-size: 13px;
+  color: #1890ff;
+  font-family: 'Courier New', monospace;
+  margin-bottom: 4px;
 }
 
 .phrase-zh {
