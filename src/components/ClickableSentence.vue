@@ -42,7 +42,7 @@ const shared = sharedActive
 const owner = Symbol()
 const active = computed({
   get: () => (shared.value?.owner === owner ? shared.value : null),
-  set: (v) => { shared.value = v && { ...v, owner } },
+  set: (v) => { shared.value = v ? { ...v, owner } : null },
 })
 watch(() => props.text, () => { active.value = null })
 onUnmounted(() => { if (shared.value?.owner === owner) shared.value = null })
