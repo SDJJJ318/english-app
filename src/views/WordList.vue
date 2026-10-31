@@ -28,7 +28,7 @@
           <div class="word-main">
             <h3 class="word-en">{{ item.en }}</h3>
             <p v-if="item.ph" class="word-ph">{{ item.ph }}</p>
-            <p class="word-zh">{{ item.zh }}</p>
+            <p class="word-zh">{{ item.zh }}<span v-if="xieyin[item.en]" class="word-xy">（{{ xieyin[item.en] }}）</span></p>
           </div>
           <div class="word-right">
             <span class="play-icon">🔊</span>
@@ -47,6 +47,7 @@ import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { allWords, tradeWordCategories, getProgress, shuffle } from '../lib/store'
 import { speak } from '../lib/speech'
+import { xieyin } from '../data/xieyin'
 
 const route = useRoute()
 const router = useRouter()
@@ -194,6 +195,10 @@ const startPractice = (mode) => {
   font-size: 14px;
   color: #1890ff;
   margin: 2px 0;
+}
+
+.word-xy {
+  color: #fa8c16;
 }
 
 .word-zh {

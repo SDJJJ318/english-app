@@ -2,6 +2,7 @@
 import { reactive, watch } from 'vue'
 import { words, wordCategories } from '../data/words'
 import { tradeWords, tradeWordCategories } from '../data/tradeWords'
+import { oldOrder } from '../data/tradeWordsOldOrder'
 import { phrases, phraseScenes } from '../data/phrases'
 import { phonetics, phoneticGroups } from '../data/phonetics'
 import { grammarQuestions, grammarTopics } from '../data/grammar'
@@ -53,7 +54,19 @@ watch(store, () => {
 }, { deep: true })
 
 // ========== 数据源映射 ==========
-const allWords = tradeWords.map((w, i) => ({ ...w, _key: `tw:${i}`, _type: 'word' }))
+// 学习记录按单词本身记（tw:单词），增删单词不会让记录错位
+const allWords = tradeWords.map(w => ({ ...w, _key: `tw:${w.en.toLowerCase()}`, _type: 'word' }))
+
+// 旧记录是按序号记的（tw:0、tw:1…，对应含 Lily、ABC 的369词顺序），转换成按单词记
+for (const key of Object.keys(store.progress)) {
+  const m = key.match(/^tw:(\d+)$/)
+  if (!m) continue
+  const word = oldOrder[Number(m[1])]
+  if (word && word !== 'lily' && word !== 'abc' && !store.progress[`tw:${word}`]) {
+    store.progress[`tw:${word}`] = store.progress[key]
+  }
+  delete store.progress[key]
+}
 const allPhrases = phrases.map((p, i) => ({ ...p, _key: `p:${i}`, _type: 'phrase' }))
 const allPhonetics = phonetics.map((ph, i) => ({ ...ph, _key: `ph:${i}`, _type: 'phonetic' }))
 const allGrammar = grammarQuestions.map((g, i) => ({ ...g, _key: `g:${i}`, _type: 'grammar' }))
