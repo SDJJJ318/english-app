@@ -89,8 +89,11 @@
 
         <!-- 语法题 -->
         <div v-else-if="currentType === 'grammar'" class="question">
-          <p class="q-prompt">选择正确答案：</p>
-          <h3 class="q-text">{{ currentItem.q }}</h3>
+          <p class="q-prompt">选择正确答案（点单词可听发音、看意思）：</p>
+          <h3 class="q-text">
+            <ClickableSentence :text="currentItem.q" :answer="answered ? currentItem.opts[currentItem.a] : null" />
+          </h3>
+          <p class="zh-text">{{ currentItem.zh }}</p>
           <div class="options">
             <button v-for="(opt, i) in currentItem.opts" :key="i" class="option-btn"
               :class="{ selected: selected === i, correct: answered && i === currentItem.a, wrong: answered && selected === i && i !== currentItem.a }"
@@ -147,6 +150,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { getAllVocab, allGrammar, recordAnswer, shuffle, getProgress } from '../lib/store'
 import { speak } from '../lib/speech'
 import SpeakCheck from '../components/SpeakCheck.vue'
+import ClickableSentence from '../components/ClickableSentence.vue'
 
 const router = useRouter()
 const route = useRoute()
