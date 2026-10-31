@@ -27,6 +27,7 @@
         <div v-for="item in filteredItems" :key="item._key" class="word-card" @click="playWord(item)">
           <div class="word-main">
             <h3 class="word-en">{{ item.en }}</h3>
+            <p v-if="item.ph" class="word-ph">{{ item.ph }}</p>
             <p class="word-zh">{{ item.zh }}</p>
           </div>
           <div class="word-right">
@@ -44,7 +45,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { allWords, tradeWordCategories, getProgress } from '../lib/store'
+import { allWords, tradeWordCategories, getProgress, shuffle } from '../lib/store'
 import { speak } from '../lib/speech'
 
 const route = useRoute()
@@ -58,7 +59,8 @@ const categories = [
   ...tradeWordCategories
 ]
 
-const selectedCat = ref(category === 'all' ? 'all' : category)
+// 默认打开第1页
+const selectedCat = ref(category === 'all' ? 'p1' : category)
 
 const filteredItems = computed(() => {
   if (selectedCat.value === 'all') return allWords
@@ -67,14 +69,15 @@ const filteredItems = computed(() => {
 
 const playWord = async (item) => {
   try {
-    await speak(item.en || item.say || item.content)
+    await speak(item.say || item.en || item.content)
   } catch (err) {
     console.error('播放失败', err)
   }
 }
 
+// 练当前这一页的全部单词；"全部"里有 369 个，随机抽 20 个
 const startPractice = (mode) => {
-  const items = filteredItems.value.slice(0, 10)
+  const items = selectedCat.value === 'all' ? shuffle(filteredItems.value).slice(0, 20) : filteredItems.value
   router.push({
     name: 'Practice',
     query: {
@@ -185,6 +188,12 @@ const startPractice = (mode) => {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 4px;
+}
+
+.word-ph {
+  font-size: 14px;
+  color: #1890ff;
+  margin: 2px 0;
 }
 
 .word-zh {
