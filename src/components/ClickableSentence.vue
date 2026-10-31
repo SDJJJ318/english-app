@@ -6,13 +6,16 @@
         @click.stop="pick(t, i)">{{ t.text }}</span><template v-else>{{ t.text }}</template>{{ t.trail }}</template>
     </span>
 
-    <div v-if="active" class="word-card" @click.stop>
-      <button class="card-close" @click="active = null">✕</button>
-      <div class="card-word">{{ active.text }}</div>
-      <div class="card-ph">{{ active.entry.ph }}</div>
-      <div class="card-zh">{{ active.entry.zh }}</div>
-      <button class="card-play" @click="play(active)">🔊 再听一遍</button>
-    </div>
+    <!-- 弹窗放到 body 下：外层卡片按下时有缩放效果，放在里面会让弹窗跟着跳位置 -->
+    <Teleport to="body">
+      <div v-if="active" class="word-card">
+        <button class="card-close" @click="active = null">✕</button>
+        <div class="card-word">{{ active.text }}</div>
+        <div class="card-ph">{{ active.entry.ph }}</div>
+        <div class="card-zh">{{ active.entry.zh }}</div>
+        <button class="card-play" @click="play(active)">🔊 再听一遍</button>
+      </div>
+    </Teleport>
   </div>
 </template>
 
