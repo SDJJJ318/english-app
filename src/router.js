@@ -16,7 +16,9 @@ const routes = [
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
+  routes,
+  // 进入新页面时从顶部开始；按返回键时回到原来看到的位置
+  scrollBehavior: (to, from, savedPosition) => savedPosition || { top: 0 }
 })
 
 export default router

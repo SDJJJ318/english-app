@@ -254,6 +254,8 @@ const wrongItems = computed(() => {
 
 // 监听题目变化，重置状态
 watch(currentIndex, () => {
+  // 答完一题后页面可能已经往下滚动看解析，换题时回到顶部
+  window.scrollTo(0, 0)
   answered.value = false
   isCorrect.value = false
   selected.value = null
