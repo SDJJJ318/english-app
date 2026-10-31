@@ -25,12 +25,12 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
-import { grammarTopics, grammarQuestions, shuffle } from '../lib/store'
+import { grammarTopics, allGrammar, shuffle } from '../lib/store'
 
 const router = useRouter()
 
 const startTopic = (topicId) => {
-  const items = grammarQuestions.filter(q => q.topic === topicId)
+  const items = allGrammar.filter(q => q.topic === topicId)
   router.push({
     name: 'Practice',
     query: {
@@ -41,7 +41,7 @@ const startTopic = (topicId) => {
 }
 
 const startMixed = () => {
-  const items = shuffle(grammarQuestions).slice(0, 10)
+  const items = shuffle(allGrammar).slice(0, 10)
   router.push({
     name: 'Practice',
     query: {
