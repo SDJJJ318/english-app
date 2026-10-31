@@ -5,6 +5,7 @@ import { words } from '../src/data/words.js'
 import { phrases } from '../src/data/phrases.js'
 import { phonetics, plainWord } from '../src/data/phonetics.js'
 import { grammarDict } from '../src/data/grammarDict.js'
+import { phraseDict } from '../src/data/phraseDict.js'
 import { audioKey } from '../src/lib/audioKey.js'
 
 const dir = new URL('../public/audio/', import.meta.url)
@@ -17,7 +18,7 @@ for (const w of words) {
 }
 for (const p of phrases) texts.add(p.en)
 // 语法题句子里可点击的单词
-for (const [word, entry] of Object.entries(grammarDict)) texts.add(entry.say || word)
+for (const [word, entry] of Object.entries({ ...phraseDict, ...grammarDict })) texts.add(entry.say || word)
 // 音标本身的发音不能用朗读接口生成（会读成字母），由 scripts/build-phonemes.sh 用真人录音生成
 for (const ph of phonetics) {
   for (const pat of ph.patterns) {

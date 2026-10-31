@@ -24,7 +24,7 @@
       <div class="phrase-list">
         <div v-for="item in filteredItems" :key="item._key" class="phrase-card" @click="playPhrase(item)">
           <div class="phrase-main">
-            <p class="phrase-en">{{ item.en }}</p>
+            <div class="phrase-en"><ClickableSentence :text="item.en" align="left" /></div>
             <p class="phrase-ph">{{ item.ph }}</p>
             <p class="phrase-zh">{{ item.zh }}</p>
           </div>
@@ -37,6 +37,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import ClickableSentence from '../components/ClickableSentence.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { allPhrases, phraseScenes } from '../lib/store'
 import { speak } from '../lib/speech'

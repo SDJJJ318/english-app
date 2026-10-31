@@ -1,5 +1,5 @@
 <template>
-  <div class="clickable-sentence">
+  <div class="clickable-sentence" :style="{ justifyContent: align === 'left' ? 'flex-start' : 'center' }">
     <span v-for="(t, i) in tokens" :key="i" class="token" :class="{ answer: t.answer }">
       <span v-if="t.blank" class="blank">___</span>
       <template v-else>{{ t.lead }}<span v-if="t.entry" class="word" :class="{ active: active?.i === i }"
@@ -16,24 +16,41 @@
   </div>
 </template>
 
+<script>
+import { ref } from 'vue'
+const sharedActive = ref(null)
+</script>
+
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { computed, watch, onUnmounted } from 'vue'
 import { grammarDict } from '../data/grammarDict'
+import { phraseDict } from '../data/phraseDict'
 import { speak } from '../lib/speech'
+
+// 两个词表合并；同一个词两边都有时用语法词表的解释
+const dict = { ...phraseDict, ...grammarDict }
 
 const props = defineProps({
   text: { type: String, required: true },
   // 题目里 ___ 的答案；不传表示还没作答，显示空格
   answer: { type: String, default: null },
+  align: { type: String, default: 'center' },
 })
 
-const active = ref(null)
+// 页面上有很多句子时，所有句子共用一个弹出卡片，同时只显示一个
+const shared = sharedActive
+const owner = Symbol()
+const active = computed({
+  get: () => (shared.value?.owner === owner ? shared.value : null),
+  set: (v) => { shared.value = v && { ...v, owner } },
+})
 watch(() => props.text, () => { active.value = null })
+onUnmounted(() => { if (shared.value?.owner === owner) shared.value = null })
 
 // 按空格拆成单词，前后标点跟单词放在一起但不参与查词；'5,000'、'0.11'、"don't" 保持完整
 const split = (str, answer = false) => str.split(/\s+/).filter(Boolean).map(chunk => {
   const [, lead, text, trail] = chunk.match(/^([^\w']*)(.*?)([^\w']*)$/)
-  return { lead, text, trail, answer, entry: grammarDict[text.toLowerCase()] }
+  return { lead, text, trail, answer, entry: dict[text.toLowerCase()] }
 })
 
 const tokens = computed(() => {
