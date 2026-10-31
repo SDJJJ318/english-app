@@ -405,7 +405,7 @@ const nextQuestion = () => {
 const playAudio = async (text) => {
   playCount.value++
   try {
-    await speak(text)
+    await speak(currentItem.value.say || text)
   } catch (err) {
     console.error('播放失败', err)
   }

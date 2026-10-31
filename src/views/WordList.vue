@@ -44,18 +44,18 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { allWords, wordCategories, getProgress } from '../lib/store'
+import { allWords, tradeWordCategories, getProgress } from '../lib/store'
 import { speak } from '../lib/speech'
 
 const route = useRoute()
 const router = useRouter()
 
 const category = route.params.category
-const pageTitle = computed(() => category === 'all' ? '光伏词汇' : '词汇学习')
+const pageTitle = computed(() => category === 'all' ? '外贸词汇' : '词汇学习')
 
 const categories = [
   { id: 'all', name: '全部' },
-  ...wordCategories
+  ...tradeWordCategories
 ]
 
 const selectedCat = ref(category === 'all' ? 'all' : category)

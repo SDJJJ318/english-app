@@ -1,6 +1,7 @@
 // 数据存储与复习算法（localStorage + SRS间隔重复）
 import { reactive, watch } from 'vue'
 import { words, wordCategories } from '../data/words'
+import { tradeWords, tradeWordCategories } from '../data/tradeWords'
 import { phrases, phraseScenes } from '../data/phrases'
 import { phonetics, phoneticGroups } from '../data/phonetics'
 import { grammarQuestions, grammarTopics } from '../data/grammar'
@@ -52,7 +53,7 @@ watch(store, () => {
 }, { deep: true })
 
 // ========== 数据源映射 ==========
-const allWords = words.map((w, i) => ({ ...w, _key: `w:${i}`, _type: 'word' }))
+const allWords = tradeWords.map((w, i) => ({ ...w, _key: `tw:${i}`, _type: 'word' }))
 const allPhrases = phrases.map((p, i) => ({ ...p, _key: `p:${i}`, _type: 'phrase' }))
 const allPhonetics = phonetics.map((ph, i) => ({ ...ph, _key: `ph:${i}`, _type: 'phonetic' }))
 const allGrammar = grammarQuestions.map((g, i) => ({ ...g, _key: `g:${i}`, _type: 'grammar' }))
@@ -185,4 +186,4 @@ export const shuffle = (arr) => {
   return copy
 }
 
-export { words, phrases, phonetics, grammarQuestions, wordCategories, phraseScenes, phoneticGroups, grammarTopics, allWords, allPhrases, allGrammar }
+export { words, phrases, phonetics, grammarQuestions, tradeWords, tradeWordCategories, wordCategories, phraseScenes, phoneticGroups, grammarTopics, allWords, allPhrases, allGrammar }

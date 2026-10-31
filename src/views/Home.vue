@@ -26,8 +26,8 @@
       <div class="modules">
         <div class="module-card" @click="$router.push('/words/all')">
           <div class="module-icon">📚</div>
-          <div class="module-title">光伏词汇</div>
-          <div class="module-desc">{{ words.length }} 个单词</div>
+          <div class="module-title">外贸词汇</div>
+          <div class="module-desc">{{ tradeWords.length }} 个单词</div>
         </div>
 
         <div class="module-card" @click="$router.push('/phrases/trade')">
@@ -67,7 +67,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { words, grammarQuestions, getDueItems, getWrongItems, getStreak, shuffle } from '../lib/store'
+import { tradeWords, grammarQuestions, getDueItems, getWrongItems, getStreak, shuffle } from '../lib/store'
 
 const router = useRouter()
 
