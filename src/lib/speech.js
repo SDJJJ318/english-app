@@ -7,7 +7,22 @@ import { store } from './store'
 import { audioKey } from './audioKey'
 import audioIndex from '../data/audioIndex.json'
 
+import phonemeIndex from '../data/phonemeIndex.json'
+
 const recorded = new Set(audioIndex)
+
+// 播放音标本身的发音（真人录音，见 scripts/build-phonemes.mjs）
+export const playPhoneme = (symbol) => {
+  const file = phonemeIndex[symbol]
+  if (!file) return Promise.reject(new Error('no_phoneme_audio'))
+  if (audio) audio.pause()
+  audio = new Audio(`${import.meta.env.BASE_URL}phoneme/${file}`)
+  return new Promise((resolve, reject) => {
+    audio.onended = resolve
+    audio.onerror = () => reject(new Error('audio_failed'))
+    audio.play().catch(reject)
+  })
+}
 const hasSystemTTS = () => 'speechSynthesis' in window
 
 // 手机自带的英文语音

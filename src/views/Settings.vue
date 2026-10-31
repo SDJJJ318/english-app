@@ -69,6 +69,9 @@
         <p class="about-tip">
           本应用数据存储在本地浏览器中，建议定期在"我的词库"页面备份数据
         </p>
+        <p class="about-text credit">
+          音标发音录音来自维基共享资源（Wikimedia Commons）国际音标录音，按 CC BY-SA 许可使用，双元音和 tr、dr 由两段录音拼接而成。
+        </p>
       </div>
     </div>
   </div>
@@ -205,6 +208,13 @@ const testVoice = async () => {
   font-size: 15px;
   margin-bottom: 8px;
   color: #666;
+}
+
+.credit {
+  font-size: 12px;
+  color: #999;
+  margin-top: 12px;
+  line-height: 1.5;
 }
 
 .about-tip {

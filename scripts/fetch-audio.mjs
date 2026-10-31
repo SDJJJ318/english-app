@@ -3,7 +3,7 @@
 import { mkdirSync, existsSync, writeFileSync, statSync } from 'node:fs'
 import { words } from '../src/data/words.js'
 import { phrases } from '../src/data/phrases.js'
-import { phonetics } from '../src/data/phonetics.js'
+import { phonetics, plainWord } from '../src/data/phonetics.js'
 import { audioKey } from '../src/lib/audioKey.js'
 
 const dir = new URL('../public/audio/', import.meta.url)
@@ -15,10 +15,10 @@ for (const w of words) {
   if (w.ex) texts.add(w.ex)
 }
 for (const p of phrases) texts.add(p.en)
+// 音标本身的发音不能用朗读接口生成（会读成字母），由 scripts/build-phonemes.sh 用真人录音生成
 for (const ph of phonetics) {
-  texts.add(ph.s) // 音标本身
   for (const pat of ph.patterns) {
-    pat.words.forEach(x => texts.add(x))
+    pat.words.forEach(x => texts.add(plainWord(x.w)))
   }
 }
 

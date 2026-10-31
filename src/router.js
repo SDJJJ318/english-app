@@ -6,6 +6,7 @@ const routes = [
   { path: '/words/:category', name: 'WordList', component: () => import('./views/WordList.vue') },
   { path: '/phrases/:scene', name: 'PhraseList', component: () => import('./views/PhraseList.vue') },
   { path: '/phonetics', name: 'Phonetics', component: () => import('./views/Phonetics.vue') },
+  { path: '/phonetics/:index', name: 'PhoneticDetail', component: () => import('./views/PhoneticDetail.vue') },
   { path: '/grammar', name: 'Grammar', component: () => import('./views/Grammar.vue') },
   { path: '/practice', name: 'Practice', component: () => import('./views/Practice.vue'), meta: { hideTab: true } },
   { path: '/wrong', name: 'WrongBook', component: () => import('./views/WrongBook.vue') },
