@@ -1,7 +1,7 @@
 // 预先下载所有内置内容的发音，存到 public/audio/，随 APP 一起发布
 // 用法：node scripts/fetch-audio.mjs   （新增内置内容后重新运行一次）
 import { mkdirSync, existsSync, writeFileSync, statSync } from 'node:fs'
-import { words } from '../src/data/words.js'
+import { tradeWords as words } from '../src/data/tradeWords.js'
 import { phrases } from '../src/data/phrases.js'
 import { phonetics, plainWord } from '../src/data/phonetics.js'
 import { grammarDict } from '../src/data/grammarDict.js'

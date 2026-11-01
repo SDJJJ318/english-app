@@ -233,3 +233,8 @@ export const phrases = [
   { en: 'Best regards to you and your family.', zh: '向你和家人致以最诚挚问候。', ph: '/best rɪˈɡɑːdz tuː juː ænd jɔː(r) ˈfæməli/', scene: 'end' },
   { en: 'Wish us a bright future together.', zh: '祝愿我们共创美好未来。', ph: '/wɪʃ əs ə braɪt ˈfjuːtʃə(r) təˈgeðə(r)/', scene: 'end' },
 ]
+
+// 接上新增的870句（生活闲聊 + 外贸商务）
+import { extraScenes, extraPhrases } from './phrasesExtra.js'
+phraseScenes.push(...extraScenes)
+phrases.push(...extraPhrases)

@@ -391,3 +391,13 @@ export const tradeWords = [
   { en: 'future', zh: '将来', ph: '/ˈfjuːtʃə/', cat: 'p19', ex: 'Wish us a bright future together.', exZh: '祝愿我们共创美好未来。' },
   { en: 'together', zh: '一起', ph: '/təˈɡeðə/', cat: 'p19', ex: 'Wish us a bright future together.', exZh: '祝愿我们共创美好未来。' },
 ]
+
+// 接上新增870句里的生词，然后按总顺序重新分页（每页20个）
+import { extraWords } from './tradeWordsExtra.js'
+tradeWords.push(...extraWords)
+tradeWords.forEach((w, i) => { w.cat = `p${Math.floor(i / 20) + 1}` })
+tradeWordCategories.length = 0
+for (let i = 0; i < tradeWords.length; i += 20) {
+  const n = i / 20 + 1
+  tradeWordCategories.push({ id: `p${n}`, name: `第${n}页 (${i + 1}-${Math.min(i + 20, tradeWords.length)})` })
+}

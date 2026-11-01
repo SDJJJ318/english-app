@@ -28,10 +28,15 @@ const sharedActive = ref(null)
 import { computed, watch, onUnmounted } from 'vue'
 import { grammarDict } from '../data/grammarDict'
 import { phraseDict } from '../data/phraseDict'
+import { tradeWords } from '../data/tradeWords'
 import { speak } from '../lib/speech'
 
 // 两个词表合并；同一个词两边都有时用语法词表的解释
-const dict = { ...phraseDict, ...grammarDict }
+// 外贸词汇（1478个，覆盖全部外贸对话）优先；没有的再查语法词表
+const tradeDict = Object.fromEntries(tradeWords.map(w => [w.en.toLowerCase().replace(/\.$/, ''), w]))
+const dict = { ...phraseDict, ...grammarDict, ...tradeDict }
+// 大小写不同意思不同的词：US 美国 / us 我们，May 五月 / may 可能
+const caseDict = { US: grammarDict.us, May: grammarDict.may }
 
 const props = defineProps({
   text: { type: String, required: true },
@@ -53,7 +58,7 @@ onUnmounted(() => { if (shared.value?.owner === owner) shared.value = null })
 // 按空格拆成单词，前后标点跟单词放在一起但不参与查词；'5,000'、'0.11'、"don't" 保持完整
 const split = (str, answer = false) => str.split(/\s+/).filter(Boolean).map(chunk => {
   const [, lead, text, trail] = chunk.match(/^([^\w']*)(.*?)([^\w']*)$/)
-  return { lead, text, trail, answer, entry: dict[text.toLowerCase()] }
+  return { lead, text, trail, answer, entry: caseDict[text] || dict[text.toLowerCase().replace(/\.$/, '')] }
 })
 
 const tokens = computed(() => {

@@ -28,7 +28,7 @@
           <div class="word-main">
             <h3 class="word-en">{{ item.en }}</h3>
             <p v-if="item.ph" class="word-ph">{{ item.ph }}</p>
-            <p class="word-zh">{{ item.zh }}<span v-if="xieyin[item.en]" class="word-xy">（{{ xieyin[item.en] }}）</span></p>
+            <p class="word-zh">{{ item.zh }}<span v-if="item.xy || xieyin[item.en]" class="word-xy">（{{ item.xy || xieyin[item.en] }}）</span></p>
           </div>
           <div class="word-right">
             <span class="play-icon">🔊</span>
