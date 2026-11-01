@@ -1,0 +1,22 @@
+{
+  "name": "光伏外贸英语学习",
+  "short_name": "英语学习",
+  "description": "光伏外贸英语学习 APP - 听说读写全方位训练",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#667eea",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
